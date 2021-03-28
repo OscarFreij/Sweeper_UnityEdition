@@ -9,7 +9,7 @@ public class GameManager : MonoBehaviour
     {
         try
         {
-            GameObject.Find("Grid").GetComponent<SweeperGrid>().Init(16, 16, 5);
+            GameObject.Find("Grid").GetComponent<SweeperGrid>().Init(16, 16, Mathf.RoundToInt((16*16)*0.33f));
             GameObject.Find("Grid").GetComponent<SweeperGrid>().GenerateGrid();
         }
         catch (System.Exception e)

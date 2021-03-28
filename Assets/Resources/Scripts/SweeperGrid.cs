@@ -11,7 +11,9 @@ public class SweeperGrid : MonoBehaviour
     public Mesh CoverMesh { get; private set; }
     public Mesh BombMesh { get; private set; }
     public Material CoverBaseMaterial { get; private set; }
-    public Material CoverFlagedMaterial { get; private set; }
+    public Color BaseCoverColor { get; private set; }
+    public Color HoverCoverColor { get; private set; }
+    public Color FlagedCoverColor { get; private set; }
 
     private int nextId;
     private int totalId;
@@ -29,35 +31,43 @@ public class SweeperGrid : MonoBehaviour
         this.nextId = 0;
 
         this.CoverBaseMaterial = Resources.Load<Material>("Materials/CoverBase");
-        this.CoverFlagedMaterial = Resources.Load<Material>("Materials/CoverFlaged");
+
+        Color temp = new Color();
+        ColorUtility.TryParseHtmlString("#414141", out temp);
+        this.BaseCoverColor = temp;
+        ColorUtility.TryParseHtmlString("#414480", out temp);
+        this.HoverCoverColor = temp;
+        ColorUtility.TryParseHtmlString("#418041", out temp);
+        this.FlagedCoverColor = temp;
     }
 
     public void GenerateGrid()
     {
         for (int i = 0; i < bombCount; i++)
         {
-            bool idNew = true;
-            int tempId = Random.Range(0, this.totalId);
+            bool continueSearch;
+            int tempId;
             do
             {
-                foreach (int tileId in bombTileId)
+                continueSearch = false;
+                tempId = Random.Range(0, this.totalId);
+
+                foreach (int id in bombTileId)
                 {
-                    if (tileId == tempId)
+                    if (id == tempId)
                     {
-                        idNew = false;
+                        continueSearch = true;
+                        Debug.Log("Id already exists in array of bomb Id's. Generating new id...");
                         break;
                     }
                 }
 
-                if (idNew)
-                {
-                    bombTileId[i] = tempId;
-                    break;
-                }
+            } while (continueSearch);
 
-            }
-            while (true);
+            bombTileId[i] = tempId;
         }
+
+        Debug.Log("Bomb id array generation complete!");
 
         for (int x = 0; x < gridSizeX; x++)
         {

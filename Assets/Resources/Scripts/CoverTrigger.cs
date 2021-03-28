@@ -16,4 +16,25 @@ public class CoverTrigger : MonoBehaviour
             transform.parent.GetComponent<SweeperGridObj>().ToggleFlag();
         }
     }
+
+    void OnMouseEnter()
+    {
+        if (this.transform.parent.GetComponent<SweeperGridObj>().state == BlockState.Closed)
+        {
+            this.GetComponent<MeshRenderer>().material.color = this.transform.parent.parent.GetComponent<SweeperGrid>().HoverCoverColor;
+        }
+    }
+
+    void OnMouseExit()
+    {
+        if (this.transform.parent.GetComponent<SweeperGridObj>().state == BlockState.Closed)
+        {
+            this.GetComponent<MeshRenderer>().material.color = this.transform.parent.parent.GetComponent<SweeperGrid>().BaseCoverColor;
+        }
+
+        if (this.transform.parent.GetComponent<SweeperGridObj>().state == BlockState.Flaged)
+        {
+            this.GetComponent<MeshRenderer>().material.color = this.transform.parent.parent.GetComponent<SweeperGrid>().FlagedCoverColor;
+        }
+    }
 }
