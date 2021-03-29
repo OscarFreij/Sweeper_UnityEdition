@@ -82,7 +82,6 @@ public class SweeperGridObj : MonoBehaviour
         switch (state)
         {
             case BlockState.Closed:
-                this.transform.Find("Cover").GetComponent<MeshRenderer>().material.color = this.grid.GetComponent<SweeperGrid>().FlagedCoverColor;
                 state = BlockState.Flaged;
                 Debug.Log($"{this.name} is now flaged!");
                 break;
@@ -90,7 +89,6 @@ public class SweeperGridObj : MonoBehaviour
                 Debug.LogError($"{this.name} flag toggle failed! Cover already open!");
                 break;
             case BlockState.Flaged:
-                this.transform.Find("Cover").GetComponent<MeshRenderer>().material.color = this.grid.GetComponent<SweeperGrid>().BaseCoverColor;
                 state = BlockState.Closed;
                 Debug.Log($"{this.name} is now un-flaged!");
                 break;
