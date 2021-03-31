@@ -8,6 +8,7 @@ public class SweeperGrid : MonoBehaviour
     public int gridSizeY { get; private set; }
     public int bombCount { get; private set; }
     public GameObject[,] grid { get; private set; }
+    public int[,] bombNeighbors { get; private set; }
     public Mesh CoverMesh { get; private set; }
     public Mesh BombMesh { get; private set; }
     public Material CoverBaseMaterial { get; private set; }
@@ -25,6 +26,16 @@ public class SweeperGrid : MonoBehaviour
         this.bombCount = bombCount;
 
         this.grid = new GameObject[this.gridSizeX, this.gridSizeY];
+        
+        this.bombNeighbors = new int[this.gridSizeX, this.gridSizeY];
+        for (int i = 0; i < gridSizeX; i++)
+        {
+            for (int j = 0; j < gridSizeY; j++)
+            {
+                this.bombNeighbors[i, j] = 0;
+            }
+        }
+
         this.bombTileId = new int[bombCount];
 
         this.totalId = this.gridSizeX * this.gridSizeY;
@@ -67,6 +78,7 @@ public class SweeperGrid : MonoBehaviour
             bombTileId[i] = tempId;
         }
 
+
         Debug.Log("Bomb id array generation complete!");
 
         for (int x = 0; x < gridSizeX; x++)
@@ -74,8 +86,8 @@ public class SweeperGrid : MonoBehaviour
             for (int y = 0; y < gridSizeY; y++)
             {
                 Debug.Log($"Creating tile with id {this.nextId} of {this.totalId}");
-                grid[x, y] = GameObject.Instantiate(Resources.Load("Prefabs/SweeperGridGameObject"), this.transform.position, Quaternion.identity, this.transform) as GameObject;
-
+                this.grid[x, y] = GameObject.Instantiate(Resources.Load("Prefabs/SweeperGridGameObject"), this.transform.position, Quaternion.identity, this.transform) as GameObject;
+                
                 bool nextIsBomb = false;
                 foreach (int id in bombTileId)
                 {
@@ -87,7 +99,25 @@ public class SweeperGrid : MonoBehaviour
                 }
 
                 Debug.Log($"Init1 for Tile {this.nextId}");
-                grid[x, y].GetComponent<SweeperGridObj>().Init1(this.nextId, new Vector2(x, y), nextIsBomb, this.transform);
+                this.grid[x, y].GetComponent<SweeperGridObj>().Init1(this.nextId, new Vector2(x, y), nextIsBomb, this.transform);
+
+                if (nextIsBomb)
+                {
+                    for (int i = -1; i < 2; i++)
+                    {
+                        for (int j = -1; j < 2; j++)
+                        {
+                            try
+                            {
+                                this.bombNeighbors[x+i, y+j] += 1;
+                            }
+                            catch
+                            {
+                                //Tile dose not exist or is outside of bounds.
+                            }
+                        }
+                    }
+                }
 
                 this.nextId += 1;
             }
@@ -99,7 +129,7 @@ public class SweeperGrid : MonoBehaviour
             for (int y = 0; y < gridSizeY; y++)
             {
                 Debug.Log($"Init2 for Tile {this.nextId}");
-                grid[x, y].GetComponent<SweeperGridObj>().Init2(0);
+                this.grid[x, y].GetComponent<SweeperGridObj>().Init2(this.bombNeighbors[x, y]);
                 this.nextId += 1;
             }
         }
